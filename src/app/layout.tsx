@@ -8,13 +8,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className="bg-gray-100 text-gray-900 min-h-screen">
-        {children}
+      <body className="bg-background text-text min-h-screen flex flex-col">
+        <header className="bg-primary text-surface p-4 shadow-md">
+          <nav className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">Mentor AI</h1>
+            <button className="bg-accent text-surface px-3 py-1 rounded-lg text-sm shadow-soft">
+              Login
+            </button>
+          </nav>
+        </header>
+        <main className="flex-grow">{children}</main>
+        <footer className="bg-surface text-muted text-center py-4 text-sm border-t">
+          © {new Date().getFullYear()} Mentor AI. All rights reserved.
+        </footer>
       </body>
     </html>
   );
