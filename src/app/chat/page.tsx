@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
 
@@ -39,6 +39,13 @@ export default function ChatPage() {
     }, 2000);
   };
 
+  // Scroll to latest message
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Messages */}
@@ -47,6 +54,7 @@ export default function ChatPage() {
           <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} />
         ))}
       {isTyping && <TypingIndicator />}
+      <div ref={chatEndRef} />
       </div>
 
 
