@@ -59,8 +59,24 @@ export default function ChatPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Clear chat function
+  const handleClearChat = () => {
+    setMessages([]);
+    localStorage.removeItem("mentor_ai_chat");
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex justify-center p-2">
+        <button
+          onClick={handleClearChat}
+          className="text-sm text-muted hover:text-highlight underline"
+        >
+          Clear Chat
+        </button>
+      </div>
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
