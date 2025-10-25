@@ -19,6 +19,19 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    const savedMessages = localStorage.getItem("mentor_ai_chat");
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
+  }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("mentor_ai_chat", JSON.stringify(messages));
+  }, [messages]);
+
     const handleSend = () => {
     if (!input.trim()) return;
 
