@@ -12,12 +12,24 @@ interface Message {
   timestamp: number; // unix timestamp
 }
 
-const initialMessages: Message[] = [
-{ id: 1, sender: "ai", text: "Hello! I'm your Mentor AI. How can I help you today?", timestamp: Date.now() }
+let messageId = 0;
+
+const getNextMessageId = () => {
+  messageId += 1;
+  return messageId;
+};
+
+const getInitialMessages = (): Message[] => [
+  {
+    id: getNextMessageId(),
+    sender: "ai",
+    text: "Hello! I'm your Mentor AI. How can I help you today?",
+    timestamp: Date.now(),
+  },
 ];
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(getInitialMessages());
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
@@ -39,7 +51,7 @@ export default function ChatPage() {
 
     // Add user message
     const newMessage: Message = {
-      id: Date.now(),
+      id: getNextMessageId(),
       sender: "user",
       text: input.trim(),
       timestamp: Date.now(),
@@ -64,10 +76,11 @@ export default function ChatPage() {
 
   // Clear chat function
   const handleClearChat = () => {
-    setMessages(initialMessages);
-    localStorage.setItem("mentor_ai_chat", JSON.stringify(initialMessages));
+    messageId = 0; // reset message ID counter
+    const resetMessages = getInitialMessages();
+    setMessages(resetMessages);
+    localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
-
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
