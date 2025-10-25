@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import ChatMessage from "./components/ChatMessage";
+import TypingIndicator from "./components/TypingIndicator";
 
 type Sender = "user" | "ai";
 
@@ -16,6 +17,7 @@ export default function ChatPage() {
     { id: 2, sender: "user", text: "I want to improve my writing skills." },
   ]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
 
     const handleSend = () => {
     if (!input.trim()) return;
@@ -29,6 +31,12 @@ export default function ChatPage() {
 
     setMessages((prev) => [...prev, newMessage]);
     setInput("");
+
+    // TEMP: simulate AI typing for UI testing
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+    }, 2000);
   };
 
   return (
@@ -38,7 +46,9 @@ export default function ChatPage() {
         {messages.map((msg) => (
           <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} />
         ))}
+      {isTyping && <TypingIndicator />}
       </div>
+
 
       {/* Input Bar */}
       <div className="bg-surface p-3 border-t flex gap-2 items-center">
