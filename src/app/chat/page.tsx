@@ -17,11 +17,17 @@ export default function ChatPage() {
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
+    const handleSend = () => {
     if (!input.trim()) return;
 
     // Add user message
-    setMessages([...messages, { id: Date.now(), sender: "user", text: input }]);
+    const newMessage: Message = {
+      id: Date.now(),
+      sender: "user",
+      text: input.trim(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
     setInput("");
   };
 
@@ -40,6 +46,7 @@ export default function ChatPage() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Type your message..."
           className="flex-1 p-2 rounded-lg border focus:outline-none"
         />
