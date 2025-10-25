@@ -1,3 +1,5 @@
+import Avatar from "./Avatar";
+
 interface ChatMessageProps {
   sender: "user" | "ai";
   text: string;
@@ -23,9 +25,12 @@ export default function ChatMessage({ sender, text, timestamp }: ChatMessageProp
   const relativeTime = formatRelativeTime(timestamp);
 
 return (
-    <div className={`mb-4 ${isUser ? "text-right" : "text-left"}`}>
+  <div className={`mb-4 flex items-end ${isUser ? "justify-end" : "justify-start"}`}>
+    {!isUser && <Avatar sender="ai" />}
+
+    <div className={`mx-2 max-w-[80%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
       <div
-        className={`px-4 py-2 rounded-2xl inline-block max-w-[80%] shadow-soft ${
+        className={`px-4 py-2 rounded-2xl shadow-soft ${
           isUser
             ? "bg-primary text-surface rounded-br-none"
             : "bg-surface text-text border rounded-bl-none"
@@ -33,9 +38,11 @@ return (
       >
         {text}
       </div>
-      <p className="text-[0.7rem] text-muted mt-1">
-        {relativeTime}
-      </p>
+      <p className="text-[0.7rem] text-muted mt-1">{relativeTime}</p>
     </div>
-  );
+
+    {isUser && <Avatar sender="user" />}
+  </div>
+);
 }
+
