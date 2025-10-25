@@ -9,10 +9,11 @@ interface Message {
   id: number;
   sender: Sender;
   text: string;
+  timestamp: number; // unix timestamp
 }
 
 const initialMessages: Message[] = [
-{ id: 1, sender: "ai", text: "Hello! I'm your Mentor AI. How can I help you today?" }
+{ id: 1, sender: "ai", text: "Hello! I'm your Mentor AI. How can I help you today?", timestamp: Date.now() }
 ];
 
 export default function ChatPage() {
@@ -41,6 +42,7 @@ export default function ChatPage() {
       id: Date.now(),
       sender: "user",
       text: input.trim(),
+      timestamp: Date.now(),
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -81,7 +83,7 @@ export default function ChatPage() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
-          <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} />
+          <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
         ))}
       {isTyping && <TypingIndicator />}
       <div ref={chatEndRef} />
