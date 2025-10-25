@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
+import LoadingBubble from "./components/LoadingBubble";
 
 type Sender = "user" | "ai";
 
@@ -32,6 +33,8 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>(getInitialMessages());
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -64,6 +67,11 @@ export default function ChatPage() {
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
+    }, 2000);
+
+    setIsLoadingAI(true);
+    setTimeout(() => {
+      setIsLoadingAI(false);
     }, 2000);
   };
 
@@ -98,10 +106,10 @@ export default function ChatPage() {
         {messages.map((msg) => (
           <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
         ))}
-      {isTyping && <TypingIndicator />}
       <div ref={chatEndRef} />
       </div>
-
+      {isLoadingAI && <LoadingBubble />}
+      {isTyping && <TypingIndicator />}
 
       {/* Input Bar */}
       <div className="bg-surface p-3 border-t flex gap-2 items-center">
