@@ -11,11 +11,12 @@ interface Message {
   text: string;
 }
 
+const initialMessages: Message[] = [
+{ id: 1, sender: "ai", text: "Hello! I'm your Mentor AI. How can I help you today?" }
+];
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, sender: "ai", text: "Hello! I'm your Mentor AI. How can I help you today?" },
-    { id: 2, sender: "user", text: "I want to improve my writing skills." },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
@@ -61,8 +62,8 @@ export default function ChatPage() {
 
   // Clear chat function
   const handleClearChat = () => {
-    setMessages([]);
-    localStorage.removeItem("mentor_ai_chat");
+    setMessages(initialMessages);
+    localStorage.setItem("mentor_ai_chat", JSON.stringify(initialMessages));
   };
 
 
