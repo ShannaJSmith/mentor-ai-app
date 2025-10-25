@@ -1,17 +1,18 @@
+import { Bot, User } from "lucide-react";
+
 interface AvatarProps {
   sender: "user" | "ai";
 }
 
 export default function Avatar({ sender }: AvatarProps) {
   const isUser = sender === "user";
-
-  // Customize these as you like
-  const avatarText = isUser ? "U" : "AI";
+  
+  const Icon = isUser ? User : Bot;
   const bgColor = isUser ? "bg-primary" : "bg-accent";
 
   return (
-    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-surface font-bold ${bgColor}`}>
-      {avatarText}
+    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-surface ${bgColor}`}>
+      <Icon size={30} />
     </div>
   );
 }
