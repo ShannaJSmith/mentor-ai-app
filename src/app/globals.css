@@ -11,6 +11,12 @@
   --muted: #64748B;             /* Muted gray */
 }
 
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}
+
 /* Semantic Classes */
 @layer utilities {
   .bg-primary { background-color: var(--primary); }

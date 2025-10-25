@@ -71,7 +71,7 @@ export default function ChatPage() {
       <div className="flex justify-center p-2">
         <button
           onClick={handleClearChat}
-          className="text-sm text-muted hover:text-highlight underline"
+          className="text-sm text-muted hover:text-primary underline"
         >
           Clear Chat
         </button>
