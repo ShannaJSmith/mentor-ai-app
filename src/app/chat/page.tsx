@@ -35,6 +35,7 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -63,6 +64,10 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newMessage]);
     setInput("");
 
+     // Reset height after sending
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
     // TEMP: simulate AI typing for UI testing
     setIsTyping(true);
     setTimeout(() => {
@@ -128,6 +133,7 @@ export default function ChatPage() {
       {/* Input Bar */}
       <div className="bg-surface p-3 border-t flex gap-2 items-center">
        <textarea
+        ref={textareaRef}
         className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-y-auto max-h-20 leading-6"
         value={input}
         onChange={handleInputChange}
