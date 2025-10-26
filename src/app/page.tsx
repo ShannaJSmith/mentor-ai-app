@@ -7,7 +7,7 @@ export default function Home() {
       </p>
       <a
         href="/chat"
-        className="bg-accent text-surface px-6 py-3 rounded-xl shadow-soft hover:opacity-90 transition"
+        className="bg-accent text-white px-6 py-3 rounded-xl shadow-soft hover:opacity-90 transition"
       >
         Start Chatting
       </a>

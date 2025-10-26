@@ -13,17 +13,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-text min-h-screen flex flex-col">
-        <header className="bg-primary text-surface p-4 shadow-md">
+      <body className="bg-grey text-text min-h-screen flex flex-col">
+        <header className="bg-primary text-white p-4 shadow-md">
           <nav className="flex items-center justify-between">
             <h1 className="text-xl font-bold">Mentor AI</h1>
-            <button className="bg-accent text-surface px-3 py-1 rounded-lg text-sm shadow-soft">
+            <button className="bg-accent text-white px-3 py-1 rounded-lg text-sm shadow-soft">
               Login
             </button>
           </nav>
         </header>
         <main className="flex-grow">{children}</main>
-        <footer className="bg-surface text-muted text-center py-4 text-sm border-t">
+        <footer className="bg-white text-muted text-center py-4 text-sm border-t">
           © {new Date().getFullYear()} Mentor AI. All rights reserved.
         </footer>
       </body>
