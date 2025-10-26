@@ -32,8 +32,8 @@ return (
       <div
         className={`px-4 py-2 rounded-2xl whitespace-pre-wrap shadow-soft ${
           isUser
-            ? "bg-primary text-surface rounded-br-none"
-            : "bg-surface text-text border rounded-bl-none"
+            ? "bg-primary text-white rounded-br-none"
+            : "bg-white text-text border rounded-bl-none"
         }`}
       >
         {text}

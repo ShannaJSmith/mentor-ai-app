@@ -91,7 +91,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-grey">
       <div className="flex justify-center p-2">
         <button
           className="text-sm text-muted hover:text-primary underline"

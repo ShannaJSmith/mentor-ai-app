@@ -11,7 +11,7 @@ export default function Avatar({ sender }: AvatarProps) {
   const bgColor = isUser ? "bg-primary" : "bg-accent";
 
   return (
-    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-surface ${bgColor}`}>
+    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white ${bgColor}`}>
       <Icon size={30} />
     </div>
   );

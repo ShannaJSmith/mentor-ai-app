@@ -29,7 +29,7 @@ export default function ChatInput({ input, setInput, onSend }: ChatInputProps) {
   };
 
   return (
-    <div className="bg-surface p-3 border-t flex gap-2 items-end">
+    <div className="bg-white p-3 border-t flex gap-2 items-end">
       <textarea
         ref={textareaRef}
         className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-y-auto max-h-20 leading-6"
@@ -42,8 +42,8 @@ export default function ChatInput({ input, setInput, onSend }: ChatInputProps) {
       <button
         className={`px-4 py-2 rounded-xl shadow-soft transition ${
           input.trim()
-            ? "bg-primary text-surface hover:opacity-90"
-            : "bg-primary text-surface opacity-50 cursor-not-allowed"
+            ? "bg-primary text-white hover:opacity-90"
+            : "bg-primary text-white opacity-50 cursor-not-allowed"
         }`}
         onClick={onSend}
         disabled={!input.trim()}
