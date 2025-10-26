@@ -35,6 +35,7 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -63,6 +64,10 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newMessage]);
     setInput("");
 
+     // Reset height after sending
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
     // TEMP: simulate AI typing for UI testing
     setIsTyping(true);
     setTimeout(() => {
@@ -90,12 +95,26 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const target = e.target;
+    setInput(target.value);
+    target.style.height = "auto";
+    target.style.height = `${target.scrollHeight}px`;
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex justify-center p-2">
         <button
-          onClick={handleClearChat}
           className="text-sm text-muted hover:text-primary underline"
+          onClick={handleClearChat}
         >
           Clear Chat
         </button>
@@ -113,17 +132,23 @@ export default function ChatPage() {
 
       {/* Input Bar */}
       <div className="bg-surface p-3 border-t flex gap-2 items-center">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type your message..."
-          className="flex-1 p-2 rounded-lg border focus:outline-none"
-        />
-        <button
+       <textarea
+        ref={textareaRef}
+        className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-y-auto max-h-20 leading-6"
+        value={input}
+        onChange={handleInputChange}
+        onKeyDown={handleInputKeyDown}
+        placeholder="Type your message..."
+        rows={1}
+      />
+       <button
+          className={`px-4 py-2 rounded-xl shadow-soft transition ${
+            input.trim()
+              ? "bg-primary text-surface hover:opacity-90"
+              : "bg-primary text-surface opacity-50 cursor-not-allowed"
+          }`}
           onClick={handleSend}
-          className="bg-primary text-surface px-4 py-2 rounded-lg shadow-soft hover:opacity-90 transition"
+          disabled={!input.trim()}
         >
           Send
         </button>
