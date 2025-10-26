@@ -90,6 +90,20 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const target = e.target;
+    setInput(target.value);
+    target.style.height = "auto";
+    target.style.height = `${target.scrollHeight}px`;
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex justify-center p-2">
@@ -116,18 +130,8 @@ export default function ChatPage() {
        <textarea
         className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-y-auto max-h-20 leading-6"
         value={input}
-        onChange={(e) => {
-          setInput(e.target.value);
-          const target = e.target as HTMLTextAreaElement;
-          target.style.height = "auto";
-          target.style.height = `${target.scrollHeight}px`;
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
-      }}
+        onChange={handleInputChange}
+        onKeyDown={handleInputKeyDown}
         placeholder="Type your message..."
         rows={1}
       />
