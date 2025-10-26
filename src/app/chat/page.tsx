@@ -114,14 +114,14 @@ export default function ChatPage() {
       {/* Input Bar */}
       <div className="bg-surface p-3 border-t flex gap-2 items-center">
        <textarea
-        className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-hidden"
-        style={{ maxHeight: "150px" }} // for mobile UX
+        className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-y-auto"
+        style={{ maxHeight: "72px", lineHeight: "1.5rem" }} // for mobile UX
         value={input}
         onChange={(e) => {
           setInput(e.target.value);
           const target = e.target as HTMLTextAreaElement;
           target.style.height = "auto"; // Reset height
-          target.style.height = `${target.scrollHeight}px`; // Set to content height
+          target.style.height = `${Math.min(target.scrollHeight, 72)}px`; // Set to content height with max
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
