@@ -141,9 +141,14 @@ export default function ChatPage() {
         placeholder="Type your message..."
         rows={1}
       />
-        <button
-          className="bg-primary text-surface px-4 py-2 rounded-lg shadow-soft hover:opacity-90 transition"
+       <button
+          className={`px-4 py-2 rounded-xl shadow-soft transition ${
+            input.trim()
+              ? "bg-primary text-surface hover:opacity-90"
+              : "bg-primary text-surface opacity-50 cursor-not-allowed"
+          }`}
           onClick={handleSend}
+          disabled={!input.trim()}
         >
           Send
         </button>
