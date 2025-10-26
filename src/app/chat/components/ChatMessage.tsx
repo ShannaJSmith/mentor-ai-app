@@ -30,7 +30,7 @@ return (
 
     <div className={`mx-2 max-w-[80%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
       <div
-        className={`px-4 py-2 rounded-2xl shadow-soft ${
+        className={`px-4 py-2 rounded-2xl whitespace-pre-wrap shadow-soft ${
           isUser
             ? "bg-primary text-surface rounded-br-none"
             : "bg-surface text-text border rounded-bl-none"
