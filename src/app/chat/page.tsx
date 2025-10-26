@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
+import ChatInput from "./components/ChatInput";
 
 type Sender = "user" | "ai";
 
@@ -35,8 +36,6 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
   // Load messages from localStorage on mount
   useEffect(() => {
     const savedMessages = localStorage.getItem("mentor_ai_chat");
@@ -64,10 +63,6 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newMessage]);
     setInput("");
 
-     // Reset height after sending
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
     // TEMP: simulate AI typing for UI testing
     setIsTyping(true);
     setTimeout(() => {
@@ -95,20 +90,6 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const target = e.target;
-    setInput(target.value);
-    target.style.height = "auto";
-    target.style.height = `${target.scrollHeight}px`;
-  };
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex justify-center p-2">
@@ -119,8 +100,7 @@ export default function ChatPage() {
           Clear Chat
         </button>
       </div>
-
-      {/* Messages */}
+      
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
@@ -129,30 +109,7 @@ export default function ChatPage() {
       </div>
       {isLoadingAI && <LoadingBubble />}
       {isTyping && <TypingIndicator />}
-
-      {/* Input Bar */}
-      <div className="bg-surface p-3 border-t flex gap-2 items-center">
-       <textarea
-        ref={textareaRef}
-        className="flex-1 p-2 border rounded-xl focus:outline-none resize-none overflow-y-auto max-h-20 leading-6"
-        value={input}
-        onChange={handleInputChange}
-        onKeyDown={handleInputKeyDown}
-        placeholder="Type your message..."
-        rows={1}
-      />
-       <button
-          className={`px-4 py-2 rounded-xl shadow-soft transition ${
-            input.trim()
-              ? "bg-primary text-surface hover:opacity-90"
-              : "bg-primary text-surface opacity-50 cursor-not-allowed"
-          }`}
-          onClick={handleSend}
-          disabled={!input.trim()}
-        >
-          Send
-        </button>
-      </div>
+     <ChatInput input={input} setInput={setInput} onSend={handleSend} />
     </div>
   );
 }
