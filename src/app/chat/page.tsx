@@ -94,8 +94,8 @@ export default function ChatPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex justify-center p-2">
         <button
-          onClick={handleClearChat}
           className="text-sm text-muted hover:text-primary underline"
+          onClick={handleClearChat}
         >
           Clear Chat
         </button>
@@ -113,17 +113,22 @@ export default function ChatPage() {
 
       {/* Input Bar */}
       <div className="bg-surface p-3 border-t flex gap-2 items-center">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type your message..."
-          className="flex-1 p-2 rounded-lg border focus:outline-none"
-        />
+       <textarea
+        className="flex-1 p-2 border rounded-xl focus:outline-none resize-none"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+      }}
+        placeholder="Type your message..."
+        rows={1}
+      />
         <button
-          onClick={handleSend}
           className="bg-primary text-surface px-4 py-2 rounded-lg shadow-soft hover:opacity-90 transition"
+          onClick={handleSend}
         >
           Send
         </button>
