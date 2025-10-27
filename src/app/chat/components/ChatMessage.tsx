@@ -1,7 +1,7 @@
 import Avatar from "./Avatar";
 
 interface ChatMessageProps {
-  sender: "user" | "ai";
+  sender: "user" | "assistant";
   text: string;
   timestamp: number;
 }
@@ -26,7 +26,7 @@ export default function ChatMessage({ sender, text, timestamp }: ChatMessageProp
 
 return (
   <div className={`mb-4 flex items-end ${isUser ? "justify-end" : "justify-start"}`}>
-    {!isUser && <Avatar sender="ai" />}
+    {!isUser && <Avatar sender="assistant" />}
 
     <div className={`mx-2 max-w-[80%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
       <div

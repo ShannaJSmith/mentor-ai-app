@@ -1,7 +1,7 @@
 import { Bot, User } from "lucide-react";
 
 interface AvatarProps {
-  sender: "user" | "ai";
+  sender: "user" | "assistant";
 }
 
 export default function Avatar({ sender }: AvatarProps) {

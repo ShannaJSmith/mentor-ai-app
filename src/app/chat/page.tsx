@@ -5,7 +5,7 @@ import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
 
-type Sender = "user" | "ai";
+type Sender = "user" | "assistant"; // Groq uses "assistant" instead of "ai" for AI messages
 
 interface Message {
   id: number;
@@ -24,7 +24,7 @@ const getNextMessageId = () => {
 const getInitialMessages = (): Message[] => [
   {
     id: getNextMessageId(),
-    sender: "ai",
+    sender: "assistant",
     text: "Hello! I'm your Mentor AI. How can I help you today?",
     timestamp: Date.now(),
   },
@@ -49,30 +49,52 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(messages));
   }, [messages]);
 
-    const handleSend = () => {
+    const handleSend = async () => {
     if (!input.trim()) return;
 
     // Add user message
-    const newMessage: Message = {
+    const userMessage: Message = {
       id: getNextMessageId(),
       sender: "user",
       text: input.trim(),
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [...prev, newMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    // TEMP: simulate AI typing for UI testing
     setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-    }, 2000);
-
     setIsLoadingAI(true);
-    setTimeout(() => {
+
+    try {
+      const apiMessages = [...messages, userMessage].map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text,
+      }));
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
+
+      const data = await response.json();
+
+      const aiMessage: Message = {
+        id: getNextMessageId(),
+        sender: "assistant",
+        text: data.reply,
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+    } finally {
+      setIsTyping(false);
       setIsLoadingAI(false);
-    }, 2000);
+    }
   };
 
   // Scroll to latest message
