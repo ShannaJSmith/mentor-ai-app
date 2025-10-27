@@ -1,38 +1,35 @@
 import { NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: "Invalid request format" }, { status: 400 });
+    if (!Array.isArray(messages)) {
+      return NextResponse.json({ error: "Invalid messages format" }, { status: 400 });
     }
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "mixtral-8x7b", // best opt for reasoning & mentoring. Change as needed.
-        messages: messages,
-        stream: false,
-        temperature: 0.7,
-      }),
+    const contents = messages.map((msg: any) => ({
+        role: msg.sender === "user" ? "user" : "model",
+        parts: [{ text: String(msg.text) }],
+      }));
+
+    // Initialize client (reads GEMINI_API_KEY from env.local automatically)
+    const ai = new GoogleGenAI({});
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-pro",
+      contents,
     });
+    // The SDK exposes response text in either place depending on version
+    const reply =
+      (response as any)?.response?.text ??
+      (response as any)?.text ??
+      "No response";
 
-    const data = await response.json();
-
-    if (data.error) {
-      return NextResponse.json({ error: data.error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({
-      reply: data.choices?.[0]?.message?.content || "No response from model",
-    });
-  } catch (error) {
-    console.error("Groq API Error:", error);
+    return NextResponse.json({ reply });
+  } catch (err) {
+    console.error("Gemini API Error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

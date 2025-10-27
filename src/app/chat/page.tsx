@@ -5,7 +5,7 @@ import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
 
-type Sender = "user" | "assistant"; // Groq uses "assistant" instead of "ai" for AI messages
+type Sender = "user" | "model"; 
 
 interface Message {
   id: number;
@@ -24,7 +24,7 @@ const getNextMessageId = () => {
 const getInitialMessages = (): Message[] => [
   {
     id: getNextMessageId(),
-    sender: "assistant",
+    sender: "model",
     text: "Hello! I'm your Mentor AI. How can I help you today?",
     timestamp: Date.now(),
   },
@@ -66,35 +66,25 @@ export default function ChatPage() {
     setIsTyping(true);
     setIsLoadingAI(true);
 
-    try {
-      const apiMessages = [...messages, userMessage].map((msg) => ({
-        role: msg.sender === "user" ? "user" : "assistant",
-        content: msg.text,
-      }));
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: [...messages, userMessage] }),
+    });
 
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ messages: apiMessages }),
-      });
+    const data = await response.json();
 
-      const data = await response.json();
+    const aiMessage: Message = {
+      id: getNextMessageId(),
+      sender: "model",
+      text: data.reply,
+      timestamp: Date.now(),
+    };
 
-      const aiMessage: Message = {
-        id: getNextMessageId(),
-        sender: "assistant",
-        text: data.reply,
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      console.error("Error fetching AI response:", error);
-    } finally {
-      setIsTyping(false);
-      setIsLoadingAI(false);
-    }
+    setMessages((prev) => [...prev, aiMessage]);
+
+    setIsTyping(false);
+    setIsLoadingAI(false);
   };
 
   // Scroll to latest message
