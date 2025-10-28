@@ -10,14 +10,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <div
       className={`
         fixed inset-y-0 left-0 z-50 w-64 p-4 flex flex-col
-        bg-grey transform transition-transform duration-300
+        bg-grey/30 backdrop-blur-lg border-r border-black/20 shadow-lg
+        transform transition-transform duration-300
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0 lg:static lg:h-screen
       `}
     >
       {/* Close button on mobile */}
       <button
-        className="lg:hidden mb-4 text-text p-1 self-end"
+        className="lg:hidden mb-4 text-white p-1 self-end"
         onClick={onClose}
       >
         ✕

@@ -17,7 +17,7 @@ export default function RootLayout({
              <div className="flex items-center gap-4">
               {/* Mobile Sidebar Toggle Button */}
               <button
-                className="lg:hidden"
+                className="lg:hidden p-2 rounded bg-white/20 hover:bg-white/30"
                 onClick={() => setIsSidebarOpen(true)}
               >
                 ☰
