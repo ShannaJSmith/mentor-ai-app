@@ -14,11 +14,10 @@ interface Message {
   timestamp: number; // unix timestamp
 }
 
-let messageId = 0;
+let messageId = 1;
 
 const getNextMessageId = () => {
-  messageId += 1;
-  return messageId;
+  return messageId++
 };
 
 const getInitialMessages = (): Message[] => [
@@ -96,7 +95,10 @@ export default function ChatPage() {
 
   // Clear chat function
   const handleClearChat = () => {
-    messageId = 0; // reset message ID counter
+    // Remove everythinf from localStorage
+    localStorage.removeItem("mentor_ai_chat");
+
+    messageId = 1; // reset message ID counter
     const resetMessages = getInitialMessages();
     setMessages(resetMessages);
     localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
