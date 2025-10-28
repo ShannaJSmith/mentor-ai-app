@@ -9,6 +9,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   return (
     <html lang="en">
       <body className="bg-grey text-text min-h-screen flex flex-col">
@@ -39,7 +41,11 @@ export default function RootLayout({
             >
           </div>
         )}
-          <Sidebar isOpen={isSidebarOpen} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+        />
           <main className="flex-grow">{children}</main>
         </div>
         <footer className="bg-white text-muted text-center py-4 text-sm border-t">
