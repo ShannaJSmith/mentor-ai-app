@@ -4,6 +4,7 @@ import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
+import Sidebar from "./components/Sidebar";
 
 type Sender = "user" | "model"; 
 
@@ -105,25 +106,28 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-grey">
-      <div className="flex justify-center p-2">
-        <button
-          className="text-sm text-muted hover:text-primary underline"
-          onClick={handleClearChat}
-        >
-          Clear Chat
-        </button>
-      </div>
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-h-screen bg-grey">
+        <div className="flex justify-center p-2">
+          <button
+            className="text-sm text-muted hover:text-primary underline"
+            onClick={handleClearChat}
+          >
+            Clear Chat
+          </button>
+        </div>
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => (
-          <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
-        ))}
-      <div ref={chatEndRef} />
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((msg) => (
+            <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
+          ))}
+        <div ref={chatEndRef} />
+        </div>
+        {isLoadingAI && <LoadingBubble />}
+        {isTyping && <TypingIndicator />}
+      <ChatInput input={input} setInput={setInput} onSend={handleSend} />
       </div>
-      {isLoadingAI && <LoadingBubble />}
-      {isTyping && <TypingIndicator />}
-     <ChatInput input={input} setInput={setInput} onSend={handleSend} />
     </div>
   );
 }
