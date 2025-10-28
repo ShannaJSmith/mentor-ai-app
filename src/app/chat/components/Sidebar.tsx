@@ -2,10 +2,9 @@
 
 interface SidebarProps {
   isOpen: boolean;
-  onClose: () => void;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen }: SidebarProps) {
   return (
     <div
       className={`
@@ -16,14 +15,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         lg:translate-x-0 lg:static lg:h-screen
       `}
     >
-      {/* Close button on mobile */}
-      <button
-        className="lg:hidden mb-4 text-white p-1 self-end"
-        onClick={onClose}
-      >
-        ✕
-      </button>
-
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-text font-semibold">Chats</h2>
         <button className="px-3 py-1 rounded-lg bg-primary text-white text-sm hover:opacity-90">

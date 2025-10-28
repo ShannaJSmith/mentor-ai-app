@@ -30,7 +30,15 @@ export default function RootLayout({
           </nav>
         </header>
         <div className="flex flex-grow">
-          <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        {/* Mobile overlay */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+            >
+          </div>
+        )}
+          <Sidebar isOpen={isSidebarOpen} />
           <main className="flex-grow">{children}</main>
         </div>
         <footer className="bg-white text-muted text-center py-4 text-sm border-t">
