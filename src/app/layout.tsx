@@ -33,8 +33,9 @@ export default function RootLayout({
         {/* Mobile overlay */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 z-40 lg:hidden"
+            className="fixed inset-0 z-40 cursor-default lg:hidden"
             onClick={() => setIsSidebarOpen(false)}
+            aria-label="Close sidebar"
             >
           </div>
         )}
