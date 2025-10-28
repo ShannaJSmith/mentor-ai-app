@@ -4,7 +4,6 @@ import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
-import Sidebar from "./components/Sidebar";
 
 type Sender = "user" | "model"; 
 
@@ -35,6 +34,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -107,7 +107,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
       <div className="flex-1 flex flex-col min-h-screen bg-grey">
         <div className="flex justify-center p-2">
           <button
