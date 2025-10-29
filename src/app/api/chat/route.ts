@@ -6,13 +6,16 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     if (!Array.isArray(messages)) {
-      return NextResponse.json({ error: "Invalid messages format" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid messages format" },
+        { status: 400 }
+      );
     }
 
     const contents = messages.map((msg: any) => ({
-        role: msg.sender === "user" ? "user" : "model",
-        parts: [{ text: String(msg.text) }],
-      }));
+      role: msg.sender === "user" ? "user" : "model",
+      parts: [{ text: String(msg.text) }],
+    }));
 
     // Initialize client (reads GEMINI_API_KEY from env.local automatically)
     const ai = new GoogleGenAI({});

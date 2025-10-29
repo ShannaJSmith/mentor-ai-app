@@ -5,7 +5,7 @@ import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
 
-type Sender = "user" | "model"; 
+type Sender = "user" | "model";
 
 interface Message {
   id: number;
@@ -17,7 +17,7 @@ interface Message {
 let messageId = 1;
 
 const getNextMessageId = () => {
-  return messageId++
+  return messageId++;
 };
 
 const getInitialMessages = (): Message[] => [
@@ -48,7 +48,7 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(messages));
   }, [messages]);
 
-    const handleSend = async () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     // Add user message
@@ -114,16 +114,21 @@ export default function ChatPage() {
           Clear Chat
         </button>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
-          <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
+          <ChatMessage
+            key={msg.id}
+            sender={msg.sender}
+            text={msg.text}
+            timestamp={msg.timestamp}
+          />
         ))}
-      <div ref={chatEndRef} />
+        <div ref={chatEndRef} />
       </div>
       {isLoadingAI && <LoadingBubble />}
       {isTyping && <TypingIndicator />}
-     <ChatInput input={input} setInput={setInput} onSend={handleSend} />
+      <ChatInput input={input} setInput={setInput} onSend={handleSend} />
     </div>
   );
 }

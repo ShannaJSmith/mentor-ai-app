@@ -17,9 +17,10 @@ export default function RootLayout({
         <header className="bg-primary text-white p-4 shadow-md">
           <nav className="flex items-center justify-between">
             <h1 className="text-xl font-bold">Mentor AI</h1>
-            <button className="bg-accent text-white px-3 py-1 rounded-lg text-sm shadow-soft">
-              Login
-            </button>
+            <button className="bg-accent 
+            text-white px-3 py-1 rounded-lg text-sm shadow-soft">
+                    Login
+                    </button>
           </nav>
         </header>
         <main className="flex-grow">{children}</main>
