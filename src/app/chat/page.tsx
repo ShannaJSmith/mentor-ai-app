@@ -14,6 +14,13 @@ interface Message {
   timestamp: number; // unix timestamp
 }
 
+interface Chat {
+  id: number;
+  title: string;
+  messages: Message[];
+  createdAt: number;
+}
+
 let messageId = 1;
 
 const getNextMessageId = () => {
@@ -34,7 +41,69 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [activeChatId, setActiveChatId] = useState<number | null>(null);
 
+  // Helper to get the current active chat
+  const activeChat = chats.find((chat) => chat.id === activeChatId);
+
+  useEffect(() => {
+  const savedChats = localStorage.getItem("mentor_ai_chats");
+  const savedActive = localStorage.getItem("mentor_ai_active_chat");
+
+  if (savedChats) {
+    const parsedChats = JSON.parse(savedChats);
+    setChats(parsedChats);
+    setActiveChatId(Number(savedActive) || parsedChats[0]?.id);
+  } else {
+    const newChat: Chat = {
+      id: Date.now(),
+      title: "New Chat",
+      messages: [
+        {
+          id: Date.now(),
+          sender: "model",
+          text: "Hello! I'm your Mentor AI. How can I help you today?",
+          timestamp: Date.now(),
+        },
+      ],
+      createdAt: Date.now(),
+    };
+    setChats([newChat]);
+    setActiveChatId(newChat.id);
+  }
+}, []);
+
+// Save chats and active chat to localStorage whenever they change
+useEffect(() => {
+  if (chats.length > 0) {
+    localStorage.setItem("mentor_ai_chats", JSON.stringify(chats));
+    localStorage.setItem("mentor_ai_active_chat", String(activeChatId));
+  }
+}, [chats, activeChatId]);
+
+const createNewChat = () => {
+  const newChat: Chat = {
+    id: Date.now(),
+    title: `Chat ${chats.length + 1}`,
+    messages: [
+      {
+        id: Date.now(),
+        sender: "model",
+        text: "Hello! I'm your Mentor AI. How can I help you today?",
+        timestamp: Date.now(),
+      },
+    ],
+    createdAt: Date.now(),
+  };
+
+  setChats((prev) => [...prev, newChat]);
+  setActiveChatId(newChat.id);
+};
+
+const selectChat = (chatId: number) => {
+  setActiveChatId(chatId);
+};
 
   // Load messages from localStorage on mount
   useEffect(() => {

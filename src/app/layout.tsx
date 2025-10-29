@@ -44,7 +44,11 @@ export default function RootLayout({
         <Sidebar
           isOpen={isSidebarOpen}
           isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          chats={chats}
+          activeChatId={activeChatId}
+          onSelectChat={selectChat}
+          onNewChat={createNewChat}
         />
           <main className="flex-grow">{children}</main>
         </div>

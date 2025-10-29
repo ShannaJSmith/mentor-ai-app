@@ -1,12 +1,24 @@
 "use client";
 
 interface SidebarProps {
-  isOpen: boolean;         // for mobile drawer
-  isCollapsed: boolean;    // for desktop collapse
+  isOpen: boolean; // for mobile drawer
+  isCollapsed: boolean; // for desktop collapse
   onToggleCollapse: () => void;
+  chats: { id: number; title: string }[];
+  activeChatId: number | null;
+  onSelectChat: (id: number) => void; 
+  onNewChat: () => void;
 }
 
-export default function Sidebar({ isOpen, isCollapsed, onToggleCollapse }: SidebarProps) {
+export default function Sidebar({
+  isOpen,
+  isCollapsed,
+  onToggleCollapse,
+  chats,
+  activeChatId,
+  onSelectChat,
+  onNewChat,
+}: SidebarProps) {
   return (
     <div className="relative">
       <div
@@ -33,15 +45,30 @@ export default function Sidebar({ isOpen, isCollapsed, onToggleCollapse }: Sideb
             </div>
 
             <nav className="flex-1 overflow-y-auto space-y-2">
-              <div className="p-3 bg-white/50 text-text rounded-xl cursor-pointer hover:bg-white/70 transition">
-                Chat 1
-              </div>
-              <div className="p-3 bg-white/50 text-text rounded-xl cursor-pointer hover:bg-white/70 transition">
-                Chat 2
-              </div>
-              <div className="p-3 bg-white/50 text-text rounded-xl cursor-pointer hover:bg-white/70 transition">
-                Chat 3
-              </div>
+              {chats.length === 0 ? (
+                <p className="text-muted text-sm italic">
+                  {isCollapsed ? "" : "No chats yet"}
+                </p>
+              ) : (
+                chats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    onClick={() => onSelectChat(chat.id)}
+                    className={`
+          p-3 rounded-xl cursor-pointer transition
+          ${
+            isCollapsed
+              ? ""
+              : chat.id === activeChatId
+              ? "bg-primary text-white"
+              : "bg-white/50 text-text hover:bg-white/70"
+          }
+        `}
+                  >
+                    {!isCollapsed && chat.title}
+                  </div>
+                ))
+              )}
             </nav>
           </div>
         )}
