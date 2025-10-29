@@ -5,7 +5,7 @@ import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
 
-type Sender = "user" | "model"; 
+type Sender = "user" | "model";
 
 interface Message {
   id: number;
@@ -24,7 +24,7 @@ interface Chat {
 let messageId = 1;
 
 const getNextMessageId = () => {
-  return messageId++
+  return messageId++;
 };
 
 const getInitialMessages = (): Message[] => [
@@ -48,17 +48,44 @@ export default function ChatPage() {
   const activeChat = chats.find((chat) => chat.id === activeChatId);
 
   useEffect(() => {
-  const savedChats = localStorage.getItem("mentor_ai_chats");
-  const savedActive = localStorage.getItem("mentor_ai_active_chat");
+    const savedChats = localStorage.getItem("mentor_ai_chats");
+    const savedActive = localStorage.getItem("mentor_ai_active_chat");
 
-  if (savedChats) {
-    const parsedChats = JSON.parse(savedChats);
-    setChats(parsedChats);
-    setActiveChatId(Number(savedActive) || parsedChats[0]?.id);
-  } else {
+    if (savedChats) {
+      const parsedChats = JSON.parse(savedChats);
+      setChats(parsedChats);
+      setActiveChatId(Number(savedActive) || parsedChats[0]?.id);
+    } else {
+      const newChat: Chat = {
+        id: Date.now(),
+        title: "New Chat",
+        messages: [
+          {
+            id: Date.now(),
+            sender: "model",
+            text: "Hello! I'm your Mentor AI. How can I help you today?",
+            timestamp: Date.now(),
+          },
+        ],
+        createdAt: Date.now(),
+      };
+      setChats([newChat]);
+      setActiveChatId(newChat.id);
+    }
+  }, []);
+
+  // Save chats and active chat to localStorage whenever they change
+  useEffect(() => {
+    if (chats.length > 0) {
+      localStorage.setItem("mentor_ai_chats", JSON.stringify(chats));
+      localStorage.setItem("mentor_ai_active_chat", String(activeChatId));
+    }
+  }, [chats, activeChatId]);
+
+  const createNewChat = () => {
     const newChat: Chat = {
       id: Date.now(),
-      title: "New Chat",
+      title: `Chat ${chats.length + 1}`,
       messages: [
         {
           id: Date.now(),
@@ -69,41 +96,14 @@ export default function ChatPage() {
       ],
       createdAt: Date.now(),
     };
-    setChats([newChat]);
+
+    setChats((prev) => [...prev, newChat]);
     setActiveChatId(newChat.id);
-  }
-}, []);
-
-// Save chats and active chat to localStorage whenever they change
-useEffect(() => {
-  if (chats.length > 0) {
-    localStorage.setItem("mentor_ai_chats", JSON.stringify(chats));
-    localStorage.setItem("mentor_ai_active_chat", String(activeChatId));
-  }
-}, [chats, activeChatId]);
-
-const createNewChat = () => {
-  const newChat: Chat = {
-    id: Date.now(),
-    title: `Chat ${chats.length + 1}`,
-    messages: [
-      {
-        id: Date.now(),
-        sender: "model",
-        text: "Hello! I'm your Mentor AI. How can I help you today?",
-        timestamp: Date.now(),
-      },
-    ],
-    createdAt: Date.now(),
   };
 
-  setChats((prev) => [...prev, newChat]);
-  setActiveChatId(newChat.id);
-};
-
-const selectChat = (chatId: number) => {
-  setActiveChatId(chatId);
-};
+  const selectChat = (chatId: number) => {
+    setActiveChatId(chatId);
+  };
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -118,8 +118,8 @@ const selectChat = (chatId: number) => {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(messages));
   }, [messages]);
 
-    const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || !activeChat) return;
 
     // Add user message
     const userMessage: Message = {
@@ -129,16 +129,29 @@ const selectChat = (chatId: number) => {
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Update active chat's messages locally
+    const updatedChats = chats.map((chat) =>
+      chat.id === activeChat.id
+        ? { ...chat, messages: [...chat.messages, userMessage] }
+        : chat
+    );
+
+    setChats(updatedChats);
     setInput("");
 
     setIsTyping(true);
     setIsLoadingAI(true);
 
+    // Call API with this chat's messages only
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [...messages, userMessage] }),
+      body: JSON.stringify({
+        messages: [...activeChat.messages, userMessage].map((msg) => ({
+          role: msg.sender === "user" ? "user" : "model",
+          content: msg.text,
+        })),
+      }),
     });
 
     const data = await response.json();
@@ -150,7 +163,14 @@ const selectChat = (chatId: number) => {
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [...prev, aiMessage]);
+    // Update with AI response
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === activeChat.id
+          ? { ...chat, messages: [...chat.messages, aiMessage] }
+          : chat
+      )
+    );
 
     setIsTyping(false);
     setIsLoadingAI(false);
@@ -185,16 +205,21 @@ const selectChat = (chatId: number) => {
             Clear Chat
           </button>
         </div>
-      
+
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg) => (
-            <ChatMessage key={msg.id} sender={msg.sender} text={msg.text} timestamp={msg.timestamp} />
+          {activeChat?.messages.map((msg) => (
+            <ChatMessage
+              key={msg.id}
+              sender={msg.sender}
+              text={msg.text}
+              timestamp={msg.timestamp}
+            />
           ))}
-        <div ref={chatEndRef} />
+          <div ref={chatEndRef} />
         </div>
         {isLoadingAI && <LoadingBubble />}
         {isTyping && <TypingIndicator />}
-      <ChatInput input={input} setInput={setInput} onSend={handleSend} />
+        <ChatInput input={input} setInput={setInput} onSend={handleSend} />
       </div>
     </div>
   );
