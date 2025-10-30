@@ -39,7 +39,7 @@ export default function ChatPage( { chats, activeChatId, setChats }: ChatPagePro
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   // // Helper to get the current active chat
-  const activeChat = chats.find((chat) => chat.id === activeChatId);
+  const activeChat = chats?.find((chat) => chat.id === activeChatId);
   // Scroll to latest message
   const chatEndRef = useRef<HTMLDivElement | null>(null);
    useEffect(() => {
