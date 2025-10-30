@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
+import { useChat } from "@/context/ChatContext";
 
 type Sender = "user" | "model";
 
@@ -14,32 +15,22 @@ interface Message {
   timestamp: number; // unix timestamp
 }
 
-interface Chat {
-  id: number;
-  title: string;
-  messages: Message[];
-  createdAt: number;
-}
-
-interface ChatPageProps {
-  chats: Chat[];
-  activeChatId: number | null;
-  setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
-}
-
 let messageId = 1;
 
 const getNextMessageId = () => {
   return messageId++;
 };
 
-export default function ChatPage( { chats, activeChatId, setChats }: ChatPageProps) {
+export default function ChatPage() {
+
+  const { chats, activeChatId, updateChatMessages } = useChat();
+  // Helper to get the current active chat
+  const activeChat = chats.find((chat) => chat.id === activeChatId);
+
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
-  // // Helper to get the current active chat
-  const activeChat = chats?.find((chat) => chat.id === activeChatId);
   // Scroll to latest message
   const chatEndRef = useRef<HTMLDivElement | null>(null);
    useEffect(() => {
@@ -57,15 +48,10 @@ export default function ChatPage( { chats, activeChatId, setChats }: ChatPagePro
       timestamp: Date.now(),
     };
 
-    // Update active chat's messages locally
-    const updatedChats = chats.map((chat) =>
-      chat.id === activeChat.id
-        ? { ...chat, messages: [...chat.messages, userMessage] }
-        : chat
-    );
-
-    setChats(updatedChats);
-    setInput("");
+     // Update UI immediately
+    const newMessages = [...activeChat.messages, userMessage];
+    updateChatMessages(activeChat.id, newMessages);
+    setInput("");;
 
     setIsTyping(true);
     setIsLoadingAI(true);
@@ -75,7 +61,7 @@ export default function ChatPage( { chats, activeChatId, setChats }: ChatPagePro
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: [...activeChat.messages, userMessage].map((msg) => ({
+        messages: newMessages.map((msg) => ({
           role: msg.sender === "user" ? "user" : "model",
           content: msg.text,
         })),
@@ -87,42 +73,32 @@ export default function ChatPage( { chats, activeChatId, setChats }: ChatPagePro
     const aiMessage: Message = {
       id: getNextMessageId(),
       sender: "model",
-      text: data.reply,
+      text: data.reply ?? "Sorry, I couldn't process that.",
       timestamp: Date.now(),
     };
 
-    // Update with AI response
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === activeChat.id
-          ? { ...chat, messages: [...chat.messages, aiMessage] }
-          : chat
-      )
-    );
+    updateChatMessages(activeChat.id, [...newMessages, aiMessage]);
 
     setIsTyping(false);
     setIsLoadingAI(false);
   };
 
   // Clear chat function
-   const handleClearChat = () => {
-    if (!activeChat) return;
+ const handleClearChat = () => {
+  if (!activeChat) return;
 
-    const resetMessage: Message = {
-      id: getNextMessageId(),
+  const resetMessages: Message[] = [
+    {
+      id: Date.now(),
       sender: "model",
       text: "Hello! I'm your Mentor AI. How can I help you today?",
       timestamp: Date.now(),
-    };
+    },
+  ];
 
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === activeChat.id
-          ? { ...chat, messages: [resetMessage] }
-          : chat
-      )
-    );
-  };
+  updateChatMessages(activeChat.id, resetMessages);
+};
+
 
   return (
     <div className="flex h-screen">
