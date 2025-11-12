@@ -18,4 +18,27 @@ describe("ChatMessage", () => {
     expect(screen.getByTestId("avatar-user")).toBeInTheDocument();
     expect(screen.queryByTestId("avatar-model")).not.toBeInTheDocument();
   });
+
+  it("renders model message on the left with model avatar", () => {
+    render(<ChatMessage sender="model" text="Hi there" timestamp={now} />);
+    expect(screen.getByText("Hi there")).toBeInTheDocument();
+    expect(screen.getByTestId("avatar-model")).toBeInTheDocument();
+    expect(screen.queryByTestId("avatar-user")).not.toBeInTheDocument();
+  });
+
+  it('shows "Just now" when timestamp is recent', () => {
+    const recent = Date.now();
+    render(
+      <ChatMessage sender="model" text="Quick reply" timestamp={recent} />
+    );
+    expect(screen.getByText(/just now/i)).toBeInTheDocument();
+  });
+
+  it("shows relative time correctly for older timestamps", () => {
+    const fiveMinsAgo = Date.now() - 5 * 60 * 1000;
+    render(
+      <ChatMessage sender="user" text="Testing time" timestamp={fiveMinsAgo} />
+    );
+    expect(screen.getByText(/5 min ago/i)).toBeInTheDocument();
+  });
 });
