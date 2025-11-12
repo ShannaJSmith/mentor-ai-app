@@ -4,6 +4,7 @@ import ChatMessage from "./components/ChatMessage";
 import TypingIndicator from "./components/TypingIndicator";
 import LoadingBubble from "./components/LoadingBubble";
 import ChatInput from "./components/ChatInput";
+import ScrollToTop from "./components/ScrollToTop";
 
 type Sender = "user" | "model";
 
@@ -128,6 +129,7 @@ export default function ChatPage() {
       </div>
       {isLoadingAI && <LoadingBubble />}
       {isTyping && <TypingIndicator />}
+      <ScrollToTop />
       <ChatInput input={input} setInput={setInput} onSend={handleSend} />
     </div>
   );
