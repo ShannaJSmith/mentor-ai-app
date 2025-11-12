@@ -105,6 +105,18 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
 
+  const handleEdit = (timestamp: number, newText: string) => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.timestamp === timestamp ? { ...msg, text: newText } : msg
+      )
+    );
+  };
+
+  const handleDelete = (timestamp: number) => {
+    setMessages((prev) => prev.filter((msg) => msg.timestamp !== timestamp));
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-grey">
       <div className="flex justify-center p-2">
@@ -119,10 +131,10 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <ChatMessage
-            key={msg.id}
-            sender={msg.sender}
-            text={msg.text}
-            timestamp={msg.timestamp}
+            key={msg.id || msg.timestamp}
+            {...msg}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         ))}
         <div ref={chatEndRef} />
