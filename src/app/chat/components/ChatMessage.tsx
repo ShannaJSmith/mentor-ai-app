@@ -57,16 +57,38 @@ export default function ChatMessage({
         >
           {/* Editable message area */}
           {isEditing ? (
-            <textarea
-              className="w-full bg-transparent border-none resize-none focus:outline-none"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={() => {
-                setIsEditing(false);
-                if (draft !== text && onEdit) onEdit(timestamp, draft);
-              }}
-              autoFocus
-            />
+            <div className="flex flex-col gap-2">
+              <textarea
+                className="w-full bg-transparent border-none resize-none focus:outline-none"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                autoFocus
+              />
+
+              <div className="flex gap-3 text-xs mt-1">
+                <button
+                  className="px-3 py-1 rounded bg-accent text-white hover:bg-primary/80"
+                  aria-label="Save edited message"
+                  onClick={() => {
+                    setIsEditing(false);
+                    if (draft !== text && onEdit) onEdit(timestamp, draft);
+                  }}
+                >
+                  Send
+                </button>
+
+                <button
+                  className="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  aria-label="Cancel editing"
+                  onClick={() => {
+                    setDraft(text); // revert
+                    setIsEditing(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           ) : (
             text
           )}
