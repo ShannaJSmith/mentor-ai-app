@@ -73,7 +73,7 @@ export default function ChatMessage({
 
           {/* Hover buttons for user messages */}
           {isUser && (
-            <div className="absolute -top-6 right-0 hidden group-hover:flex gap-2 text-xs">
+            <div className="absolute mt-2 gap-3 opacity-0 transition-opacity group-hover:opacity-100">
               <button
                 aria-label="Edit message"
                 onClick={() => setIsEditing(true)}
