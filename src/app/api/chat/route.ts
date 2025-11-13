@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
   try {
@@ -12,23 +12,22 @@ export async function POST(req: Request) {
       );
     }
 
+    // Prepare messages for Gemini API
     const contents = messages.map((msg: any) => ({
       role: msg.sender === "user" ? "user" : "model",
       parts: [{ text: String(msg.text) }],
     }));
 
-    // Initialize client (reads GEMINI_API_KEY from env.local automatically)
-    const ai = new GoogleGenAI({});
+    // Initialize Gemini client
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
-      contents,
-    });
-    // The SDK exposes response text in either place depending on version
+    // Generate model response
+    const result = await model.generateContent({ contents });
+
+    // Extract reply text safely
     const reply =
-      (response as any)?.response?.text ??
-      (response as any)?.text ??
-      "No response";
+      result.response?.text() ?? (result as any)?.text ?? "No response";
 
     return NextResponse.json({ reply });
   } catch (err) {
