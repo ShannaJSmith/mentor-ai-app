@@ -72,6 +72,7 @@ export default function ChatMessage({
           {/* Editable message area */}
           {isEditing ? (
             <div className="flex flex-col gap-2">
+              <p className="text-xs text-accent font-medium mb-1">Editing…</p>
               <textarea
                 className="w-full bg-transparent border-none resize-none focus:outline-none"
                 value={draft}
