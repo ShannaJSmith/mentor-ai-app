@@ -1,5 +1,6 @@
 import Avatar from "./Avatar";
 import { useState } from "react";
+import { Copy } from "lucide-react";
 
 interface ChatMessageProps {
   sender: "user" | "model";
@@ -152,7 +153,21 @@ export default function ChatMessage({
                 >
                   Edit
                 </button>
+                {/* Divider */}
                 <div className="h-[1px] bg-gray-200 w-full" />
+                <button
+                  className="px-3 py-2 text-left hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => {
+                    navigator.clipboard.writeText(text).catch(() => {});
+                    setShowMobileMenu(false);
+                  }}
+                >
+                  Copy
+                  <Copy className="w-4 h-4 text-gray-600" />
+                </button>
+
+                <div className="h-[1px] bg-gray-200 w-full" />
+
                 <button
                   className="px-3 py-2 text-left hover:bg-gray-100"
                   onClick={() => {
