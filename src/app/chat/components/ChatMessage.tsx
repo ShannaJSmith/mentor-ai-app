@@ -62,6 +62,12 @@ export default function ChatMessage({
                 className="w-full bg-transparent border-none resize-none focus:outline-none"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    setDraft(text);
+                    setIsEditing(false);
+                  }
+                }}
                 autoFocus
               />
 
