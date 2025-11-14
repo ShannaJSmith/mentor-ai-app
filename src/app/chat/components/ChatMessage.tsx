@@ -19,6 +19,7 @@ export default function ChatMessage({
   const isUser = sender === "user";
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(text);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const formatRelativeTime = (timestamp: number): string => {
     const diff = Date.now() - timestamp;
@@ -34,6 +35,16 @@ export default function ChatMessage({
   };
 
   const relativeTime = formatRelativeTime(timestamp);
+
+  let pressTimer: NodeJS.Timeout;
+
+  const handleTouchStart = () => {
+    pressTimer = setTimeout(() => setShowMobileMenu(true), 600); // long press
+  };
+
+  const handleTouchEnd = () => {
+    clearTimeout(pressTimer);
+  };
 
   return (
     <div
@@ -54,6 +65,8 @@ export default function ChatMessage({
               ? "bg-primary text-white rounded-br-none"
               : "bg-white text-text border rounded-bl-none"
           }`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Editable message area */}
           {isEditing ? (
@@ -99,9 +112,9 @@ export default function ChatMessage({
             text
           )}
 
-          {/* Hover buttons for user messages */}
-          {isUser && (
-            <div className="absolute mt-2 gap-3 opacity-0 transition-opacity group-hover:opacity-100">
+          {/* DESKTOP HOVER BUTTONS */}
+          {isUser && !showMobileMenu && (
+            <div className="flex absolute mt-2 gap-3 opacity-0 transition-opacity group-hover:opacity-100">
               <button
                 aria-label="Edit message"
                 onClick={() => setIsEditing(true)}
@@ -117,6 +130,40 @@ export default function ChatMessage({
                 🗑️
               </button>
             </div>
+          )}
+
+          {/* MOBILE LONG PRESS MENU */}
+          {showMobileMenu && isUser && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/30 z-40"
+                onClick={() => setShowMobileMenu(false)}
+              />
+
+              {/* Dropdown menu */}
+              <div className="absolute z-50 mt-2 p-2 rounded-lg bg-white shadow-lg text-sm text-black flex flex-col min-w-[140px]">
+                <button
+                  className="px-3 py-2 text-left hover:bg-gray-100"
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    setIsEditing(true);
+                  }}
+                >
+                  Edit
+                </button>
+                <div className="h-[1px] bg-gray-200 w-full" />
+                <button
+                  className="px-3 py-2 text-left hover:bg-gray-100"
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    onDelete?.(timestamp);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </>
           )}
         </div>
 
