@@ -88,7 +88,7 @@ export default function ChatMessage({
 
               <div className="flex gap-3 text-xs mt-1">
                 <button
-                  className="px-3 py-1 rounded bg-accent text-white hover:bg-primary/80"
+                  className="px-3 py-1 rounded bg-accent text-white hover:bg-accent/80"
                   aria-label="Save edited message"
                   onClick={() => {
                     setIsEditing(false);
@@ -146,13 +146,13 @@ export default function ChatMessage({
               {/* Dropdown menu */}
               <div className="absolute z-50 mt-2 p-2 rounded-lg bg-white shadow-lg text-sm text-black flex flex-col min-w-[140px]">
                 <button
-                  className="px-3 py-2 text-left hover:bg-gray-100"
+                  className="px-3 py-2 text-left hover:bg-gray-100 flex items-center justify-between"
                   onClick={() => {
                     setShowMobileMenu(false);
                     setIsEditing(true);
                   }}
                 >
-                  Edit
+                  Edit <div className="w-4 h-4 text-gray-600">✏️</div>
                 </button>
                 {/* Divider */}
                 <div className="h-[1px] bg-gray-200 w-full" />
@@ -170,13 +170,13 @@ export default function ChatMessage({
                 <div className="h-[1px] bg-gray-200 w-full" />
 
                 <button
-                  className="px-3 py-2 text-left hover:bg-gray-100"
+                  className="px-3 py-2 text-left hover:bg-gray-100 flex items-center justify-between"
                   onClick={() => {
                     setShowMobileMenu(false);
                     onDelete?.(timestamp);
                   }}
                 >
-                  Delete
+                  Delete <div className="w-4 h-4 text-gray-600">🗑️</div>
                 </button>
               </div>
             </>
