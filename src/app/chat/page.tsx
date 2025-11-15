@@ -105,12 +105,49 @@ export default function ChatPage() {
     localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
 
-  const handleEdit = (timestamp: number, newText: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
+  const handleEdit = async (timestamp: number, newText: string) => {
+    let updatedHistory: Message[] = [];
+
+    // Update messages state synchronously
+    setMessages((prev) => {
+      const updated = prev.map((msg) =>
         msg.timestamp === timestamp ? { ...msg, text: newText } : msg
-      )
-    );
+      );
+
+      // Remove the model reply immediately after the edited message
+      const editedIndex = updated.findIndex((m) => m.timestamp === timestamp);
+
+      if (updated[editedIndex + 1]?.sender === "model") {
+        updated.splice(editedIndex + 1, 1);
+      }
+
+      updatedHistory = updated; // get the updated version
+
+      return updated;
+    });
+
+    // Wait one microtask so `updatedHistory` is populated
+    await Promise.resolve();
+
+    // Send updated history to API
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: updatedHistory }),
+    });
+
+    const data = await response.json();
+
+    // Append new model reply
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: getNextMessageId(),
+        sender: "model",
+        text: data.reply,
+        timestamp: Date.now(),
+      },
+    ]);
   };
 
   const handleDelete = (timestamp: number) => {
