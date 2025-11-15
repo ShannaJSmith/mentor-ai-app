@@ -44,8 +44,14 @@ export default function ChatPage() {
     }
   }, []);
 
-  // Save messages to localStorage whenever they change
   useEffect(() => {
+    // Do NOT save if in the middle of a clear
+    if (isClearingRef.current) {
+      isClearingRef.current = false;
+      localStorage.setItem("mentor_ai_chat", JSON.stringify(messages));
+      return;
+    }
+
     localStorage.setItem("mentor_ai_chat", JSON.stringify(messages));
   }, [messages]);
 
@@ -94,15 +100,17 @@ export default function ChatPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const isClearingRef = useRef(false);
+
   // Clear chat function
   const handleClearChat = () => {
-    // Remove everythinf from localStorage
+    isClearingRef.current = true;
+
     localStorage.removeItem("mentor_ai_chat");
 
-    messageId = 1; // reset message ID counter
+    messageId = 1;
     const resetMessages = getInitialMessages();
     setMessages(resetMessages);
-    localStorage.setItem("mentor_ai_chat", JSON.stringify(resetMessages));
   };
 
   const handleEdit = async (timestamp: number, newText: string) => {
