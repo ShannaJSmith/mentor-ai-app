@@ -113,6 +113,61 @@ export default function ChatPage() {
     setMessages(resetMessages);
   };
 
+  const handleEdit = async (timestamp: number, newText: string) => {
+    let updatedHistory: Message[] = [];
+
+    setIsTyping(true);
+    setIsLoadingAI(true);
+
+    // Update messages state synchronously
+    setMessages((prev) => {
+      const updated = prev.map((msg) =>
+        msg.timestamp === timestamp ? { ...msg, text: newText } : msg
+      );
+
+      // Remove the model reply immediately after the edited message
+      const editedIndex = updated.findIndex((m) => m.timestamp === timestamp);
+
+      if (updated[editedIndex + 1]?.sender === "model") {
+        updated.splice(editedIndex + 1, 1);
+      }
+
+      updatedHistory = updated; // get the updated version
+
+      return updated;
+    });
+
+    // Wait one microtask so `updatedHistory` is populated
+    await Promise.resolve();
+
+    // Send updated history to API
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: updatedHistory }),
+    });
+
+    const data = await response.json();
+
+    // Append new model reply
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: getNextMessageId(),
+        sender: "model",
+        text: data.reply,
+        timestamp: Date.now(),
+      },
+    ]);
+
+    setIsTyping(false);
+    setIsLoadingAI(false);
+  };
+
+  const handleDelete = (timestamp: number) => {
+    setMessages((prev) => prev.filter((msg) => msg.timestamp !== timestamp));
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-grey">
       <div className="flex justify-center p-2">
@@ -127,10 +182,10 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <ChatMessage
-            key={msg.id}
-            sender={msg.sender}
-            text={msg.text}
-            timestamp={msg.timestamp}
+            key={msg.id || msg.timestamp}
+            {...msg}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         ))}
         <div ref={chatEndRef} />
