@@ -116,6 +116,9 @@ export default function ChatPage() {
   const handleEdit = async (timestamp: number, newText: string) => {
     let updatedHistory: Message[] = [];
 
+    setIsTyping(true);
+    setIsLoadingAI(true);
+
     // Update messages state synchronously
     setMessages((prev) => {
       const updated = prev.map((msg) =>
@@ -156,6 +159,9 @@ export default function ChatPage() {
         timestamp: Date.now(),
       },
     ]);
+
+    setIsTyping(false);
+    setIsLoadingAI(false);
   };
 
   const handleDelete = (timestamp: number) => {
