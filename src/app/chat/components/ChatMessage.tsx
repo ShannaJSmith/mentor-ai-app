@@ -22,6 +22,9 @@ export default function ChatMessage({
   const [draft, setDraft] = useState(text);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showModelActions, setShowModelActions] = useState(false);
+  const [mobileMenuType, setMobileMenuType] = useState<"user" | "model" | null>(
+    null
+  );
 
   const formatRelativeTime = (timestamp: number): string => {
     const diff = Date.now() - timestamp;
@@ -40,8 +43,11 @@ export default function ChatMessage({
 
   let pressTimer: NodeJS.Timeout;
 
-  const handleTouchStart = () => {
-    pressTimer = setTimeout(() => setShowMobileMenu(true), 600); // long press
+  const handleTouchStart = (sender: "user" | "model") => {
+    pressTimer = setTimeout(() => {
+      setMobileMenuType(sender);
+      setShowMobileMenu(true);
+    }, 600);
   };
 
   const handleTouchEnd = () => {
@@ -73,7 +79,7 @@ export default function ChatMessage({
               ? "bg-primary text-white rounded-br-none"
               : "bg-white text-text border rounded-bl-none"
           }`}
-          onTouchStart={handleTouchStart}
+          onTouchStart={() => handleTouchStart(sender)}
           onTouchEnd={handleTouchEnd}
         >
           {/* Editable message area */}
@@ -164,6 +170,54 @@ export default function ChatMessage({
                 <Share2 className="w-3 h-3" /> Share
               </button>
             </div>
+          )}
+
+          {/* MOBILE LONG-PRESS MENU FOR MODEL MESSAGES */}
+          {showMobileMenu && mobileMenuType === "model" && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/30 z-40"
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setMobileMenuType(null);
+                }}
+              />
+
+              {/* Dropdown */}
+              <div className="absolute z-50 mt-4 p-0 rounded-lg bg-white shadow-lg text-sm text-black flex flex-col min-w-[150px] overflow-hidden">
+                <button
+                  className="px-4 py-3 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => {
+                    navigator.clipboard.writeText(text).catch(() => {});
+                    setShowMobileMenu(false);
+                    setMobileMenuType(null);
+                  }}
+                >
+                  <span>Copy</span>
+                  <Copy className="w-4 h-4 text-gray-600" />
+                </button>
+
+                <div className="h-[1px] bg-gray-200 w-full" />
+
+                <button
+                  className="px-4 py-3 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => {
+                    const shareData = { title: "Mentor AI Response", text };
+
+                    if (navigator.share)
+                      navigator.share(shareData).catch(() => {});
+                    else navigator.clipboard.writeText(text);
+
+                    setShowMobileMenu(false);
+                    setMobileMenuType(null);
+                  }}
+                >
+                  <span>Share</span>
+                  <Share2 className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+            </>
           )}
 
           {/* MOBILE LONG PRESS MENU */}
