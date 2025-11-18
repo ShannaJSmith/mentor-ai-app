@@ -21,7 +21,6 @@ export default function ChatMessage({
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(text);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showModelActions, setShowModelActions] = useState(false);
   const [mobileMenuType, setMobileMenuType] = useState<"user" | "model" | null>(
     null
   );
@@ -59,12 +58,6 @@ export default function ChatMessage({
       className={`group mb-4 flex items-end ${
         isUser ? "justify-end" : "justify-start"
       }`}
-      onMouseEnter={() => {
-        if (sender === "model") setShowModelActions(true);
-      }}
-      onMouseLeave={() => {
-        if (sender === "model") setShowModelActions(false);
-      }}
     >
       {!isUser && <Avatar sender="model" />}
 
@@ -147,8 +140,8 @@ export default function ChatMessage({
             </div>
           )}
 
-          {sender === "model" && showModelActions && !showMobileMenu && (
-            <div className="flex gap-4 mt-2 text-xs text-gray-400">
+          {sender === "model" && !showMobileMenu && !isEditing && (
+            <div className="mt-2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex gap-4">
               <button
                 onClick={() => navigator.clipboard.writeText(text)}
                 className="hover:text-primary flex items-center gap-1"
