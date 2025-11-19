@@ -1,6 +1,6 @@
 import Avatar from "./Avatar";
 import { useState } from "react";
-import { Copy } from "lucide-react";
+import { Copy, Share2 } from "lucide-react";
 
 interface ChatMessageProps {
   sender: "user" | "model";
@@ -21,6 +21,10 @@ export default function ChatMessage({
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(text);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [mobileMenuType, setMobileMenuType] = useState<"user" | "model" | null>(
+    null
+  );
+  const [copied, setCopied] = useState(false);
 
   const formatRelativeTime = (timestamp: number): string => {
     const diff = Date.now() - timestamp;
@@ -39,12 +43,21 @@ export default function ChatMessage({
 
   let pressTimer: NodeJS.Timeout;
 
-  const handleTouchStart = () => {
-    pressTimer = setTimeout(() => setShowMobileMenu(true), 600); // long press
+  const handleTouchStart = (sender: "user" | "model") => {
+    pressTimer = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(30); // 30ms buzz
+      setMobileMenuType(sender);
+      setShowMobileMenu(true);
+    }, 600);
   };
 
   const handleTouchEnd = () => {
     clearTimeout(pressTimer);
+  };
+
+  const triggerCopied = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200); // auto-hide
   };
 
   return (
@@ -66,7 +79,7 @@ export default function ChatMessage({
               ? "bg-primary text-white rounded-br-none"
               : "bg-white text-text border rounded-bl-none"
           }`}
-          onTouchStart={handleTouchStart}
+          onTouchStart={() => handleTouchStart(sender)}
           onTouchEnd={handleTouchEnd}
         >
           {/* Editable message area */}
@@ -132,6 +145,91 @@ export default function ChatMessage({
                 🗑️
               </button>
             </div>
+          )}
+
+          {sender === "model" && !showMobileMenu && !isEditing && (
+            <div className="mt-2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex gap-4">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(text);
+                  triggerCopied();
+                }}
+                className="hover:text-primary flex items-center gap-1"
+              >
+                {copied ? (
+                  <span className="text-primary font-medium copied-fade">
+                    Copied!
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <Copy className="w-3 h-3" /> Copy
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  const shareData = { title: "Mentor AI Response", text };
+                  if (navigator.share) {
+                    navigator.share(shareData).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(text);
+                  }
+                }}
+                className="hover:text-primary flex items-center gap-1"
+              >
+                <Share2 className="w-3 h-3" /> Share
+              </button>
+            </div>
+          )}
+
+          {/* MOBILE LONG-PRESS MENU FOR MODEL MESSAGES */}
+          {showMobileMenu && mobileMenuType === "model" && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/30 z-40"
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setMobileMenuType(null);
+                }}
+              />
+
+              {/* Dropdown */}
+              <div className="absolute z-50 mt-4 p-0 rounded-lg bg-white shadow-lg text-sm text-black flex flex-col min-w-[150px] overflow-hidden">
+                <button
+                  className="px-4 py-3 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => {
+                    navigator.clipboard.writeText(text).catch(() => {});
+                    triggerCopied();
+                    setShowMobileMenu(false);
+                    setMobileMenuType(null);
+                  }}
+                >
+                  <span>Copy</span>
+                  <Copy className="w-4 h-4 text-gray-600" />
+                </button>
+
+                <div className="h-[1px] bg-gray-200 w-full" />
+
+                <button
+                  className="px-4 py-3 hover:bg-gray-100 flex items-center justify-between"
+                  onClick={() => {
+                    const shareData = { title: "Mentor AI Response", text };
+
+                    if (navigator.share)
+                      navigator.share(shareData).catch(() => {});
+                    else navigator.clipboard.writeText(text);
+
+                    setShowMobileMenu(false);
+                    setMobileMenuType(null);
+                  }}
+                >
+                  <span>Share</span>
+                  <Share2 className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+            </>
           )}
 
           {/* MOBILE LONG PRESS MENU */}
