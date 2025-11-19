@@ -45,6 +45,7 @@ export default function ChatMessage({
 
   const handleTouchStart = (sender: "user" | "model") => {
     pressTimer = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(30); // 30ms buzz
       setMobileMenuType(sender);
       setShowMobileMenu(true);
     }, 600);
@@ -152,6 +153,7 @@ export default function ChatMessage({
                 onClick={() => {
                   navigator.clipboard.writeText(text);
                   triggerCopied();
+                  if (navigator.vibrate) navigator.vibrate(10);
                 }}
                 className="hover:text-primary flex items-center gap-1"
               >
