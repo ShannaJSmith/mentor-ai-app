@@ -24,6 +24,7 @@ export default function ChatMessage({
   const [mobileMenuType, setMobileMenuType] = useState<"user" | "model" | null>(
     null
   );
+  const [copied, setCopied] = useState(false);
 
   const formatRelativeTime = (timestamp: number): string => {
     const diff = Date.now() - timestamp;
@@ -51,6 +52,11 @@ export default function ChatMessage({
 
   const handleTouchEnd = () => {
     clearTimeout(pressTimer);
+  };
+
+  const triggerCopied = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200); // auto-hide
   };
 
   return (
@@ -143,10 +149,21 @@ export default function ChatMessage({
           {sender === "model" && !showMobileMenu && !isEditing && (
             <div className="mt-2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex gap-4">
               <button
-                onClick={() => navigator.clipboard.writeText(text)}
+                onClick={() => {
+                  navigator.clipboard.writeText(text);
+                  triggerCopied();
+                }}
                 className="hover:text-primary flex items-center gap-1"
               >
-                <Copy className="w-3 h-3" /> Copy
+                {copied ? (
+                  <span className="text-primary font-medium copied-fade">
+                    Copied!
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <Copy className="w-3 h-3" /> Copy
+                  </span>
+                )}
               </button>
 
               <button
@@ -183,6 +200,7 @@ export default function ChatMessage({
                   className="px-4 py-3 hover:bg-gray-100 flex items-center justify-between"
                   onClick={() => {
                     navigator.clipboard.writeText(text).catch(() => {});
+                    triggerCopied();
                     setShowMobileMenu(false);
                     setMobileMenuType(null);
                   }}
