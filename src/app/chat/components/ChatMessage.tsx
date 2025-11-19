@@ -153,7 +153,6 @@ export default function ChatMessage({
                 onClick={() => {
                   navigator.clipboard.writeText(text);
                   triggerCopied();
-                  if (navigator.vibrate) navigator.vibrate(10);
                 }}
                 className="hover:text-primary flex items-center gap-1"
               >
